@@ -19,16 +19,14 @@ public class TaskController {
     private static final Logger log = LogManager.getLogger();
     private CloseableHttpClient client = null;
     private HttpClientBuilder builder = null;
-    private String server = "https://mytyshi.ru";
     private final int retryDelay = 5 * 1000;
     private final int retryCount = 2;
     private final int metadataTimeout = 30 * 1000;
 
-    public TaskController(String _server) {
+    public TaskController() {
         CookieStore httpCookieStore = new BasicCookieStore();
         builder = HttpClientBuilder.create().setDefaultCookieStore(httpCookieStore);
         client = builder.build();
-        this.server = _server;
     }
 
     public Document getUrl(String url) {
@@ -37,7 +35,7 @@ public class TaskController {
         Document doc = null;
 
         for (int iTry= 0; iTry < retryCount; ++iTry) {
-            log.info("getting page from url " + url);
+            log.info("Загружаю страницу с адресом \"" + url + "\"");
             RequestConfig requestConfig = RequestConfig.custom()
                     .setSocketTimeout(metadataTimeout)
                     .setConnectTimeout(metadataTimeout)
@@ -53,13 +51,13 @@ public class TaskController {
                 response = client.execute(request);
                 code = response.getStatusLine().getStatusCode();
                 if (code == 404) {
-                    log.warn("error get url " + url + " code " + code);
+                    log.warn("Не смог получить страницу с адресом \"" + url + "\"! Код ошибки: " + code);
                     bStop = true;
                 } else if (code == 200) {
                     HttpEntity entity = response.getEntity();
                     if (entity != null) {
                         try {
-                            doc = Jsoup.parse(entity.getContent(), "UTF-8", server);
+                            doc = Jsoup.parse(entity.getContent(), "UTF-8", url);
                             break;
                         } catch (IOException e) {
                             log.error(e);
@@ -67,7 +65,7 @@ public class TaskController {
                     }
                     bStop = true;
                 } else {
-                    log.warn("error get url " + url + " code " + code);
+                    log.warn("Не смог получить страницу с адресом \"" + url + "\"! Код ошибки: " + code);
                     response.close();
                     response = null;
                     client.close();
@@ -75,7 +73,7 @@ public class TaskController {
                     builder.setDefaultCookieStore(httpCookieStore);
                     client = builder.build();
                     int delay = retryDelay * (iTry + 1);
-                    log.info("wait" + delay / 1000 + " s ...");
+                    log.info("Попробую снова через " + delay / 1000 + " секунд...");
                     try {
                         Thread.sleep(delay);
                         continue;
