@@ -1,0 +1,6 @@
+put _cluster/settings
+{
+  "persistent": {
+    "action.auto_create_index": "true"
+  }
+}
