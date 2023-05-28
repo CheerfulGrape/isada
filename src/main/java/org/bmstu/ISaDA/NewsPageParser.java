@@ -15,13 +15,15 @@ import java.nio.charset.StandardCharsets;
 public class NewsPageParser extends DefaultConsumer {
     private static final Logger log = LogManager.getLogger();
 
-    private static final String exchangeName = "";
-    private static final String newsPageUrl = "process_url";
-
     private final PageGetter pageGetter = new PageGetter();
 
-    public NewsPageParser(Channel channel) {
+    private String exchangeName = "";
+    private String processNewsUrl = "";
+
+    public NewsPageParser(Channel channel, String exchangeName, String processNewsUrl) {
         super(channel);
+        this.exchangeName = exchangeName;
+        this.processNewsUrl = processNewsUrl;
     }
 
     @Override
@@ -30,7 +32,7 @@ public class NewsPageParser extends DefaultConsumer {
         String url = new String(body, StandardCharsets.UTF_8);
 
         Document page = pageGetter.getPageFromUrl(url);
-        if (page == null || !ParseNews(page)) {
+        if (page == null || !ParseNews(page, url)) {
             try {
                 getChannel().basicReject(deliveryTag, false);
             } catch (IOException e) {
@@ -46,12 +48,23 @@ public class NewsPageParser extends DefaultConsumer {
         }
     }
 
-    private boolean ParseNews(Document page) {
+    private boolean ParseNews(Document page, String url) {
         try {
-            Elements news = page.getElementsByClass("parts-page__body _parts-news").select("li.parts-page__item");
-            for (Element element : news) {
-                publishToRMQ(newsPageUrl, "");
+            String title = page.getElementsByClass("topic-body__title").text();
+            String author = page.getElementsByClass("topic-authors__author").text();
+            String dateTime = page.getElementsByClass("topic-header__time").text();
+
+            StringBuilder articleBuilder = new StringBuilder();
+            Elements articleParts = page.getElementsByClass("topic-body__content").first().getElementsByClass("topic-body__content-text");
+            for (Element element : articleParts) {
+                articleBuilder.append(element.text()).append("\n\n");
             }
+            String article = articleBuilder.toString();
+
+            NewsArticle newsArticle = new NewsArticle(title, dateTime, article, author, url);
+            publishToRMQ(processNewsUrl, newsArticle.Serialize());
+
+            log.info("Обработал новость: \""+ title + "\", " + dateTime + ", автор - " + author + " | " + url);
         } catch (Exception e) {
             log.error(e);
             return false;

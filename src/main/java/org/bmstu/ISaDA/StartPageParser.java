@@ -15,15 +15,16 @@ import java.nio.charset.StandardCharsets;
 public class StartPageParser extends DefaultConsumer {
     private static final Logger log = LogManager.getLogger();
 
-    private static final String exchangeName = "";
-    private static final String newsPageUrl = "news_page_url";
-
     private final PageGetter pageGetter = new PageGetter();
 
-    private String baseSiteAddr = "https://lenta.ru";
+    private String baseSiteAddr = "";
+    private String exchangeName = "";
+    private String newsPageUrl = "";
 
-    public StartPageParser(Channel channel, String baseSiteAddr) {
+    public StartPageParser(Channel channel, String exchangeName, String newsPageUrl, String baseSiteAddr) {
         super(channel);
+        this.exchangeName = exchangeName;
+        this.newsPageUrl = newsPageUrl;
         this.baseSiteAddr = baseSiteAddr;
     }
 
@@ -91,6 +92,8 @@ public class StartPageParser extends DefaultConsumer {
             );
         } catch (Exception e) {
             log.error(e);
+            log.error(e.getCause());
+            log.error(e.getMessage());
         }
     }
 }
