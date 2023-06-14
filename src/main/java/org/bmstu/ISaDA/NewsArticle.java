@@ -106,11 +106,11 @@ public class NewsArticle {
     }
 
     public String serialize() {
-        String title = _title.replace("\"", "\\\"");
-        String date = LocalDateTimeToString(_date);
-        String text = _text.replace("\"", "\\\"");
-        String author = _author.replace("\"", "\\\"");
-        String url = _url.replace("\"", "\\\"");
+        String title = _title.replace("\"", "\\\"").replace("\n", "\\n");
+        String date = LocalDateTimeToString(_date).replace("\n", "\\n");
+        String text = _text.replace("\"", "\\\"").replace("\n", "\\n");
+        String author = _author.replace("\"", "\\\"").replace("\n", "\\n");
+        String url = _url.replace("\"", "\\\"").replace("\n", "\\n");
 
         return String.format("{\"title\": \"%s\",\"date\": \"%s\",\"text\": \"%s\",\"author\": \"%s\",\"url\": \"%s\"}", title, date, text, author, url);
     }
