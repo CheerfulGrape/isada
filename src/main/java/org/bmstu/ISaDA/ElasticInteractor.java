@@ -1,6 +1,5 @@
 package org.bmstu.ISaDA;
 
-import co.elastic.clients.elasticsearch._types.ErrorCause;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
@@ -51,7 +50,7 @@ class ElasticBulkCreator extends Thread {
             br.operations(op -> op
                     .create(idx -> idx
                             .index(this.indexName)
-                            .id(article.getHash())
+                            .id(article.calculateHash())
                             .document(article)
                     )
             );

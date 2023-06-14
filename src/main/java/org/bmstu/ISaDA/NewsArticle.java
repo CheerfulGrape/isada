@@ -9,9 +9,6 @@ import org.json.simple.parser.ParseException;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.util.Date;
 
 public class NewsArticle {
     static public int MonthToNumber(String month)
@@ -134,7 +131,7 @@ public class NewsArticle {
         _url = url;
     }
 
-    public String getHash() {
+    public String calculateHash() {
         String hashedParts = _title + _date + _author;
         return DigestUtils.md5Hex(hashedParts).toUpperCase();
     }

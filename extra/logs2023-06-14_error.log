@@ -1,1 +1,0 @@
-2023-06-14 23:55:40.471 | ERROR | 2-thread-5 | stu.ISaDA.PageGetter:100   | java.net.SocketTimeoutException: Read timed out
