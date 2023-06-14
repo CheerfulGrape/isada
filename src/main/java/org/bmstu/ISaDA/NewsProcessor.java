@@ -7,7 +7,6 @@ import com.rabbitmq.client.Envelope;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.parser.ParseException;
-import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -16,6 +15,8 @@ import java.security.NoSuchAlgorithmException;
 public class NewsProcessor extends DefaultConsumer {
     private static final Logger log = LogManager.getLogger();
 
+    private final ElasticInteractor elasticInteractor = new ElasticInteractor();
+
     public NewsProcessor(Channel channel) {
         super(channel);
     }
@@ -23,13 +24,22 @@ public class NewsProcessor extends DefaultConsumer {
     private boolean ProcessArticle(String articleData)
     {
         try {
-            NewsArticle article = NewsArticle.Deserialize(articleData);
-            log.info("Обрабатываю текст новости: \"" + article.GetTitle() + "\"");
-        } catch (ParseException | NoSuchAlgorithmException e) {
-            log.error(e);
+            NewsArticle article = NewsArticle.deserialize(articleData);
+            log.info("Пытаюсь поместить статью в очередь на обработку: \"" + article.getTitle() + "\"");
+            if (!elasticInteractor.enqueueArticle(article))
+            {
+                log.error("-> Не добавить статью в очередь на обработку!");
+                return false;
+            }
+            else
+            {
+                log.info("-> Статья добавлена в очередь на обработку!");
+                return true;
+            }
+        } catch (ParseException e) {
+            log.error("Ошибка при парсинге статьи!");
             return false;
         }
-        return true;
     }
 
     @Override

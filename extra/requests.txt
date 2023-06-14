@@ -1,0 +1,40 @@
+// Get all the data
+GET /news-articles/_search
+{
+  "query": {
+    "match_all": {}
+  }
+}
+
+// Get only data matching 1 field
+GET /news-articles/_search
+{
+  "query": {
+    "match": {
+      "author": "Майя Пономаренко"
+    }
+  }
+}
+
+// Multiple field search
+GET /news-articles/_search
+{
+  "query": {
+    "multi_match": {
+      "query": "Майя Пономаренко",
+      "fields": ["author", "title"]
+    }
+  }
+}
+
+// OR search ("Марья" OR "Дарья")
+GET /news-articles/_search
+{
+  "query": {
+    "multi_match": {
+      "query": "Майя Дарья",
+      "fields": ["author", "title"],
+      "operator": "or"
+    }
+  }
+}

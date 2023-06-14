@@ -52,7 +52,7 @@ public class Main {
         startingChannel.queueDeclare(startPageUrl, true, false, false, null);
         startingChannel.queueDeclare(newsPageUrl, true, false, false, null);
         startingChannel.queueDeclare(processNewsUrl, true, false, false, null);
-        for (int i = 1; i < 5; ++i) {
+        for (int i = 1; i < 100; ++i) {
             String url = baseSiteAddr + startPagePart + Integer.toString(i);
             publishToRMQ(startingChannel, exchangeName, startPageUrl, url);
         }

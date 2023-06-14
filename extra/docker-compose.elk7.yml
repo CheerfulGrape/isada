@@ -6,6 +6,8 @@ services:
     environment:
       - xpack.security.enabled=false
       - "discovery.type=single-node"
+      - ELASTIC_USERNAME=elastic
+      - ELASTIC_PASSWORD=DkIedPPSCb
     networks:
       - es-net
     ports:

@@ -62,7 +62,7 @@ public class NewsPageParser extends DefaultConsumer {
             String article = articleBuilder.toString();
 
             NewsArticle newsArticle = new NewsArticle(title, dateTime, article, author, url);
-            publishToRMQ(processNewsUrl, newsArticle.Serialize());
+            publishToRMQ(processNewsUrl, newsArticle.serialize());
 
             log.info("Обработал новость: \""+ title + "\", " + dateTime + ", автор - " + author + " | " + url);
         } catch (Exception e) {

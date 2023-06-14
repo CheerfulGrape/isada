@@ -15,12 +15,15 @@ services:
         RABBITMQ_DEFAULT_PASS: "rabbitmq"
         RABBITMQ_DEFAULT_VHOST: "/"
       volumes:
-        - ./docker-data/rabbitmq/etc/definitions.json:/etc/rabbitmq/definitions.json
-        - ./docker-data/rabbitmq/etc/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
-        - ./docker-data/rabbitmq/data:/var/lib/rabbitmq/mnesia/rabbit@my-rabbit
-        - ./docker-data/rabbitmq/logs:/var/log/rabbitmq/log
+        - rmq-etc:/etc/rabbitmq/definitions.json
+        - rmq-etc:/etc/rabbitmq/rabbitmq.conf
+        - rmq-var:/var/lib/rabbitmq/mnesia/rabbit@my-rabbit
+        - rmq-var:/var/log/rabbitmq/log
       ports:
         - "15672:15672"
         - "5672:5672"
       labels:
         NAME: "rabbitmq"
+volumes:
+  rmq-etc:
+  rmq-var:
