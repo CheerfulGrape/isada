@@ -33,26 +33,7 @@ public class NewsArticle {
         }
     }
 
-    static public String NumberToMonth(int month)
-    {
-        switch (month) {
-            case 1: return "января";
-            case 2: return "февраля";
-            case 3: return "марта";
-            case 4: return "апреля";
-            case 5: return "мая";
-            case 6: return "июня";
-            case 7: return "июля";
-            case 8: return "августа";
-            case 9: return "сентября";
-            case 10: return "октября";
-            case 11: return "ноября";
-            case 12: return "декабря";
-            default: return "января";
-        }
-    }
-
-    static public LocalDateTime StringToLocalDateTime(String timestamp)
+    static public DateTime StringToLocalDateTime(String timestamp)
     {
         // "17:11, 14 июня 2023"
         String time = timestamp.split(", ")[0];
@@ -65,31 +46,29 @@ public class NewsArticle {
         int hour = Integer.parseInt(time.split(":")[0]);
         int minute = Integer.parseInt(time.split(":")[1]);
 
-        return LocalDateTime.of(year, month, day, hour, minute);
-    }
+        DateTime x = DateTime.of(LocalDateTime.of(year, month, day, hour, minute).toString());
 
-    static public String LocalDateTimeToString(LocalDateTime timestamp)
-    {
-        // "17:11, 14 июня 2023"
-        return String.format("%02d:%02d, %d %s %d",
-                timestamp.getHour(),
-                timestamp.getMinute(),
-                timestamp.getDayOfMonth(),
-                NumberToMonth(timestamp.getMonth().getValue()),
-                timestamp.getYear()
-        );
+        return DateTime.of(LocalDateTime.of(year, month, day, hour, minute).toString());
     }
 
     public NewsArticle(String title, String date, String text, String author, String url) {
         _title = title;
-        _date = StringToLocalDateTime(date);
+        _date = StringToLocalDateTime(date).getString();
         _text = text;
         _author = author;
         _url = url;
+    }
 
-        String hashedParts = _title + _date + _author;
-
-        _hash = DigestUtils.md5Hex(hashedParts).toUpperCase();
+    public NewsArticle(String title, String date, String text, String author, String url, boolean convertDate) {
+        _title = title;
+        if (convertDate) {
+            _date = StringToLocalDateTime(date).getString();
+        } else {
+            _date = date;
+        }
+        _text = text;
+        _author = author;
+        _url = url;
     }
 
     public static NewsArticle deserialize(String jsonString) throws ParseException {
@@ -102,12 +81,12 @@ public class NewsArticle {
         String author = (String)json.get("author");
         String url = (String)json.get("url");
 
-        return new NewsArticle(title, date, text, author, url);
+        return new NewsArticle(title, date, text, author, url, false);
     }
 
     public String serialize() {
         String title = _title.replace("\"", "\\\"").replace("\n", "\\n");
-        String date = LocalDateTimeToString(_date).replace("\n", "\\n");
+        String date = _date.replace("\"", "\\\"").replace("\n", "\\n");
         String text = _text.replace("\"", "\\\"").replace("\n", "\\n");
         String author = _author.replace("\"", "\\\"").replace("\n", "\\n");
         String url = _url.replace("\"", "\\\"").replace("\n", "\\n");
@@ -119,31 +98,50 @@ public class NewsArticle {
         return _title;
     }
 
-    public DateTime getDate() {
-        return DateTime.of(_date.toString());
+    public void setTitle(String title) {
+        _title = title;
+    }
+
+    public String getDate() {
+        return _date;
+    }
+
+    public void setDate(String date) {
+        _date = date;
     }
 
     public String getText() {
         return _text;
     }
 
+    public void setText(String text) {
+        _text = text;
+    }
+
     public String getAuthor() {
         return _author;
+    }
+
+    public void setAuthor(String author) {
+        _author = author;
     }
 
     public String getUrl() {
         return _url;
     }
 
-    public String getHash() {
-        return _hash;
+    public void setUrl(String url) {
+        _url = url;
     }
 
-    private final String _title;
-    private final LocalDateTime _date;
-    private final String _text;
-    private final String _author;
-    private final String _url;
+    public String getHash() {
+        String hashedParts = _title + _date + _author;
+        return DigestUtils.md5Hex(hashedParts).toUpperCase();
+    }
 
-    private final String _hash;
+    private String _title;
+    private String _date;
+    private String _text;
+    private String _author;
+    private String _url;
 }

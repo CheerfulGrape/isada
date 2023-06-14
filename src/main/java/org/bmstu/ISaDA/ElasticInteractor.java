@@ -63,8 +63,8 @@ class ElasticBulkCreator extends Thread {
             synchronized (client) {
                 result = client.bulk(br.build());
             }
+            boolean isError = false;
             if (result.errors()) {
-                boolean isError = false;
                 for (BulkResponseItem item: result.items()) {
                     if (item.error() != null) {
                         if (item.error().reason() != null) {
@@ -81,7 +81,8 @@ class ElasticBulkCreator extends Thread {
                         log.error(item.error().reason());
                     }
                 }
-            } else {
+            }
+            if (!isError) {
                 log.info("Индексация успешно завершена!");
             }
         } catch (IOException e) {
