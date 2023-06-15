@@ -136,4 +136,5 @@ GET /news-articles/_search
 Поле tonality:\
 ![Analysis_tonality](./extra/images/Analysis_tonality.png)\
 Графики с новым полем:\
-![Analysis_visuals](./extra/images/Analysis_visuals.png)
+![Analysis_visuals](./extra/images/Analysis_visuals.png)\
+График позволяет сделать вывод, что хотя в большинстве своём статьи окрашены нейтрально, как и подобает новостному ресурсу, иногда появляются статьи с ярким окрасом (тональность "-13").
