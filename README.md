@@ -118,6 +118,57 @@ GET /news-articles/_search
   }
 }
 ```
+Аггрегация по тональности и автору за определённые даты:
+```json
+GET /news-articles/_search
+{
+  "size": 0,
+  "query": {
+    "range": {
+      "date": {
+        "gte": "2022-10-15T00:00",
+        "lt": "2023-10-15T00:00"
+      }
+    }
+  },
+  "aggs": {
+    "tonality_aggregation": {
+      "terms": {
+        "field": "tonality"
+      }
+    },
+    "author_aggregation": {
+      "terms": {
+        "field": "author.keyword"
+      }
+    }
+  }
+}
+```
+Значения и среднее тональности автора Варвары Кошечкиной:
+```json
+GET /news-articles/_search
+{
+  "size": 0,
+  "query": {
+    "match": {
+      "author": "Варвара Кошечкина"
+    }
+  },
+  "aggs": {
+    "tonality": {
+      "terms": {
+        "field": "tonality"
+      }
+    },
+    "tonality_avg": {
+      "avg": {
+        "field": "tonality"
+      }
+    }
+  }
+}
+```
 
 ## Задание № 4. Анализ собранных данных
 ### Задание
