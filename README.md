@@ -169,7 +169,35 @@ GET /news-articles/_search
   }
 }
 ```
-
+Аггрегация по авторам, а затем по тональности:
+```json
+GET /news-articles/_search
+{
+  "size": 0,
+  "query": {
+    "range": {
+      "date": {
+        "gte": "2022-10-15T00:00",
+        "lt": "2023-10-15T00:00"
+      }
+    }
+  },
+  "aggs": {
+    "author_aggregation": {
+      "terms": {
+        "field": "author.keyword"
+      },
+      "aggs": {
+        "tonality_aggregation": {
+          "terms": {
+            "field": "tonality"
+          }
+        }
+      }
+    }
+  }
+}
+```
 ## Задание № 4. Анализ собранных данных
 ### Задание
 - [ ] Поиск неполных дублей с предварительной фильтрацией текста: использование регулярок, Long Sent, Heavy Sent – удовл.
